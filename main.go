@@ -28,7 +28,7 @@ func printExampleProject() {
 
 func main() {
 	example := flag.Bool("example",  false, "Print an example of project definition on the standatd output, and exit")
-	root := flag.String("root", "/tmp/automat", "Directory where the Automat database is stored")
+	root := flag.String("serve", "", "Directory where the Automat database is stored")
 	port := flag.Int("port", 8080, "HTTP port to use for the server")
 	flag.Parse()
 	if !flag.Parsed() {
@@ -38,10 +38,12 @@ func main() {
 		printExampleProject()
 		syscall.Exit(0)
         }
-	database = builder.NewDatabase(*root)
-	http.Handle("/", database)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
-	if err != nil {
-		log.Fatalf("ListenAndServe failed %s\n", err)
+	if *root != "" {
+		database = builder.NewDatabase(*root)
+		http.Handle("/", database)
+		err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
+		if err != nil {
+			log.Fatalf("ListenAndServe failed %s\n", err)
+		}
 	}
 }
