@@ -5,7 +5,7 @@
 package main
 
 import (
-	"github.com/soccasys/builder"
+	"github.com/soccasys/automat"
 	"encoding/json"
 	"syscall"
 	"flag"
@@ -14,14 +14,14 @@ import (
 	"net/http"
 )
 
-var database *builder.Database
+var database *automat.Database
 
 func printExampleProject() {
-	p := builder.NewProject()
+	p := automat.NewProject()
         p.Name = "build-automat"
-	p.AddComponent("src/github.com/soccasys/builder", "https://github.com/soccasys/builder.git", "master")
-	p.AddComponent("src/github.com/soccasys/build-automat", "https://github.com/soccasys/build-automat.git", "master")
-	p.AddBuildStep("Build All", ".", []string{"go", "install", "github.com/soccasys/build-automat"})
+	p.AddComponent("src/github.com/soccasys/automat", "https://github.com/soccasys/automat.git", "master")
+	p.AddComponent("src/github.com/soccasys/automat-server", "https://github.com/soccasys/automat-server.git", "master")
+	p.AddBuildStep("Build All", ".", []string{"go", "install", "github.com/soccasys/automat-server"})
         text, _ := json.MarshalIndent(p, "", "    ")
 	fmt.Printf("%s\n", text)
 }
@@ -39,7 +39,7 @@ func main() {
 		syscall.Exit(0)
         }
 	if *root != "" {
-		database = builder.NewDatabase(*root)
+		database = automat.NewDatabase(*root)
 		http.Handle("/", database)
 		err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 		if err != nil {
